@@ -1,5 +1,7 @@
 APP_NAME = deadmut
 BUILD_DIR = bin
+VERSION ?= $(shell git describe --tags --always --dirty 2>/dev/null || echo "dev")
+LDFLAGS = -ldflags "-X main.version=$(VERSION)"
 
 .PHONY: all build install uninstall clean test lint
 
@@ -7,7 +9,7 @@ all: build
 
 build:
 	@echo "Building $(APP_NAME)..."
-	go build -ldflags -o bin/$(APP_NAME) .
+	go build $(LDFLAGS) -o bin/$(APP_NAME) .
 
 install:
 	@echo "Installing $(APP_NAME)..."
@@ -17,7 +19,7 @@ install:
 	fi; \
 	mkdir -p "$$bin_dir"; \
 	echo "Installing to $$bin_dir/$(APP_NAME)"; \
-	go build -o "$$bin_dir/$(APP_NAME)" .
+	go build $(LDFLAGS) -o "$$bin_dir/$(APP_NAME)" .
 
 uninstall:
 	@echo "Uninstalling $(APP_NAME)..."
