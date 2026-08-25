@@ -598,9 +598,9 @@ func (a *analyzer) effectOf(s site) effect {
 		return f.param(s.param)
 	case siteEscape:
 		return effectShared
+	default:
+		return effectNone
 	}
-
-	return effectNone
 }
 
 // factOf returns the write fact of fn, or nil when it is unknown.
@@ -656,24 +656,28 @@ func (a *analyzer) isDeadCandidate(s site) bool {
 		}
 
 		return !s.resultUsed || allResultsError(s.callee)
+	default:
+		return false
 	}
-
-	return false
 }
 
 func (a *analyzer) report(v *types.Var, s site) {
 	name := v.Name()
-	suffix := fmt.Sprintf("%s is a copy of the range element", name)
 
+	var msg string
 	switch s.kind {
 	case siteWrite:
-		a.pass.Reportf(s.expr.Pos(), "write to %s has no effect: %s", types.ExprString(s.expr), suffix)
+		msg = fmt.Sprintf("write to %s has no effect", types.ExprString(s.expr))
 	case siteMethodCall:
-		a.pass.Reportf(s.expr.Pos(), "%s writes to %s, which has no effect: %s", types.ExprString(s.expr), name, suffix)
+		msg = fmt.Sprintf("%s writes to %s, which has no effect", types.ExprString(s.expr), name)
 	case siteAddrCall:
-		a.pass.Reportf(s.expr.Pos(), "%s writes to %s through %s, which has no effect: %s",
-			types.ExprString(s.call.Fun), name, types.ExprString(s.expr), suffix)
+		msg = fmt.Sprintf("%s writes to %s through %s, which has no effect",
+			types.ExprString(s.call.Fun), name, types.ExprString(s.expr))
+	default:
+		return
 	}
+
+	a.pass.Reportf(s.expr.Pos(), "%s: %s is a copy of the range element", msg, name)
 }
 
 // readAfter reports whether any read may observe the loop variable after c.

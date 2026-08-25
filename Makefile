@@ -1,45 +1,20 @@
-APP_NAME = deadmut
-BUILD_DIR = bin
-VERSION ?= $(shell git describe --tags --always --dirty 2>/dev/null || echo "dev")
-LDFLAGS = -ldflags "-X main.version=$(VERSION)"
-
-.PHONY: all build install uninstall clean test lint
-
-all: build
+.PHONY: build install test lint vet clean
 
 build:
-	@echo "Building $(APP_NAME)..."
-	go build $(LDFLAGS) -o bin/$(APP_NAME) .
+	go build -trimpath -ldflags "-s -w" -o bin/deadmut ./cmd/deadmut
 
 install:
-	@echo "Installing $(APP_NAME)..."
-	@bin_dir=$$(go env GOBIN); \
-	if [ -z "$$bin_dir" ]; then \
-		bin_dir=$$(go env GOPATH)/bin; \
-	fi; \
-	mkdir -p "$$bin_dir"; \
-	echo "Installing to $$bin_dir/$(APP_NAME)"; \
-	go build $(LDFLAGS) -o "$$bin_dir/$(APP_NAME)" .
-
-uninstall:
-	@echo "Uninstalling $(APP_NAME)..."
-	@bin_dir=$$(go env GOBIN); \
-	if [ -z "$$bin_dir" ]; then \
-		bin_dir=$$(go env GOPATH)/bin; \
-	fi; \
-	echo "Removing $$bin_dir/$(APP_NAME)"; \
-	rm -f "$$bin_dir/$(APP_NAME)"
-
-clean:
-	@echo "Cleaning up..."
-	rm -rf $(BUILD_DIR)
+	go install ./cmd/deadmut
 
 test:
-	go test ./...
+	go test -race ./...
 
 lint:
-	@command -v golangci-lint >/dev/null 2>&1 || { \
-		@echo "golangci-lint is not installed"; \
-		exit 1; \
-	}
 	golangci-lint run
+
+# Run deadmut on its own source.
+vet: build
+	go vet -vettool=bin/deadmut ./...
+
+clean:
+	rm -rf bin

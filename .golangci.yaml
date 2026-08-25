@@ -2,55 +2,52 @@ version: "2"
 
 formatters:
   enable:
-    - gofmt
+    - gofumpt
     - goimports
   settings:
     goimports:
       local-prefixes:
-        - github.com/mickamy/pointless
+        - github.com/go-by-value/deadmut
+  exclusions:
+    paths:
+      - testdata
 
 linters:
+  default: standard
   enable:
-    - errcheck
-    - govet
-    - ineffassign
-    - staticcheck
-    - unused
+    - copyloopvar
+    - errorlint
+    - exhaustive
     - gocritic
-    - revive
+    - godot
     - gosec
+    - misspell
+    - nolintlint
+    - paralleltest
+    - perfsprint
+    - prealloc
+    - revive
+    - thelper
     - unconvert
     - unparam
-    - prealloc
-    - bodyclose
-    - nilerr
-    - wrapcheck
-    - nlreturn
-    - godot
-    - paralleltest
-    - forcetypeassert
-
+    - usestdlibvars
+    - usetesting
+    - wastedassign
   settings:
-    revive:
-      rules:
-        - name: blank-imports
-        - name: context-as-argument
-        - name: context-keys-type
-        - name: dot-imports
-        - name: error-return
-        - name: error-strings
-        - name: error-naming
-        - name: increment-decrement
-        - name: var-naming
-        - name: range
-        - name: receiver-naming
-        - name: time-naming
-        - name: unexported-return
-        - name: indent-error-flow
-        - name: errorf
-    gosec:
-      excludes:
-        - G104
+    exhaustive:
+      default-signifies-exhaustive: true
+    govet:
+      enable-all: true
+      disable:
+        - fieldalignment
+    misspell:
+      locale: US
+  exclusions:
+    presets:
+      - common-false-positives
+      - std-error-handling
+    paths:
+      - testdata
 
 issues:
   max-issues-per-linter: 0
