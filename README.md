@@ -153,8 +153,6 @@ make lint  # golangci-lint run
 make vet   # run deadmut on its own source
 ```
 
-This project is developed with the help of AI coding assistants. All code is reviewed, tested against the standard library and real-world code for false positives, and maintained by a human.
-
 ## License
 
 [MIT](./LICENSE)
