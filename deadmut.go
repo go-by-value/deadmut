@@ -75,9 +75,9 @@ type writeFact struct {
 	Params []effect
 }
 
-func (*writeFact) AFact() {}
+func (writeFact) AFact() {}
 
-func (f *writeFact) String() string {
+func (f writeFact) String() string {
 	parts := make([]string, 0, 1+len(f.Params))
 	parts = append(parts, "recv="+f.Recv.String())
 	for i, p := range f.Params {
@@ -87,7 +87,7 @@ func (f *writeFact) String() string {
 	return strings.Join(parts, " ")
 }
 
-func (f *writeFact) param(i int) effect {
+func (f writeFact) param(i int) effect {
 	if i < 0 || i >= len(f.Params) {
 		return effectShared
 	}
@@ -95,7 +95,7 @@ func (f *writeFact) param(i int) effect {
 	return f.Params[i]
 }
 
-func (f *writeFact) isZero() bool {
+func (f writeFact) isZero() bool {
 	if f.Recv != effectNone {
 		return false
 	}
@@ -108,7 +108,7 @@ func (f *writeFact) isZero() bool {
 	return true
 }
 
-func (f *writeFact) equal(g writeFact) bool {
+func (f writeFact) equal(g writeFact) bool {
 	if f.Recv != g.Recv || len(f.Params) != len(g.Params) {
 		return false
 	}
